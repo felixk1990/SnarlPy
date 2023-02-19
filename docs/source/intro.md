@@ -1,5 +1,4 @@
-# Entanglement Analysis
-
+About goflow: 
 A repository holding the structure for the 'intertwined' package as well
 examples and galleries.
 

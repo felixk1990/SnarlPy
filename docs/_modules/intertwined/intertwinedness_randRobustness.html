@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>intertwined.intertwinedness_randRobustness &#8212; entanglement-analysis  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">entanglement-analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">intertwined.intertwinedness_randRobustness</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for intertwined.intertwinedness_randRobustness</h1><div class="highlight"><pre>
+<span></span><span class="c1"># @Author: Felix Kramer &lt;felix&gt;</span>
+<span class="c1"># @Date:   2022-07-27T15:50:36+02:00</span>
+<span class="c1"># @Email:  felixuwekramer@proton.me</span>
+<span class="c1"># @Filename: intertwinedness_randRobustness.py</span>
+<span class="c1"># @Last modified by:   felix</span>
+<span class="c1"># @Last modified time: 2022-07-28T18:42:59+02:00</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rd</span>
+<span class="kn">import</span> <span class="nn">intertwined.sampling</span> <span class="k">as</span> <span class="nn">itws</span>
+
+
+<div class="viewcode-block" id="sample_linkage_robustness_onesided"><a class="viewcode-back" href="../../intertwined.html#intertwined.intertwinedness_randRobustness.sample_linkage_robustness_onesided">[docs]</a><span class="k">def</span> <span class="nf">sample_linkage_robustness_onesided</span><span class="p">(</span><span class="n">ref_graph</span><span class="p">,</span> <span class="n">cut_graph</span><span class="p">,</span> <span class="n">repNum</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    sampling through the cycle space of a seeminly intergraph system.</span>
+<span class="sd">    Testing whether sampled cycles are intertwined with each other.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ref_graph (list):\n</span>
+<span class="sd">            The reference graph, which is setting the frame to be disentangled</span>
+<span class="sd">            from.</span>
+<span class="sd">        cut_graph (list):\n</span>
+<span class="sd">            The graph for which the optimal cut set if searched.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray:\n</span>
+<span class="sd">            The relative cutting numbers for each sampling.</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            The list of optimal cut set for the cut_graph.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">robustnessSets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">cutSets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nullitySets</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">repNum</span><span class="p">):</span>
+
+        <span class="c1"># generate basis vectors and corresponding graph matrices</span>
+        <span class="n">graph_sets</span> <span class="o">=</span> <span class="p">[</span><span class="n">cut_graph</span><span class="p">,</span> <span class="n">ref_graph</span><span class="p">]</span>
+        <span class="n">cyc_nx_base</span> <span class="o">=</span> <span class="p">[</span><span class="n">itws</span><span class="o">.</span><span class="n">calc_cycle_basis</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="k">for</span> <span class="n">G</span> <span class="ow">in</span> <span class="n">graph_sets</span><span class="p">]</span>
+        <span class="n">nullity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">itws</span><span class="o">.</span><span class="n">calc_nullity</span><span class="p">(</span><span class="n">G</span><span class="p">)</span><span class="o">-</span><span class="mf">1.</span> <span class="k">for</span> <span class="n">G</span> <span class="ow">in</span> <span class="n">graph_sets</span><span class="p">])</span>
+        <span class="n">nullitySets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nullity</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># compute linkage of basis vectors</span>
+        <span class="n">numeric_res</span> <span class="o">=</span> <span class="n">itws</span><span class="o">.</span><span class="n">basis_linkage</span><span class="p">(</span><span class="o">*</span><span class="n">cyc_nx_base</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">fromiter</span><span class="p">(</span><span class="n">numeric_res</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="mi">0</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">nullity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No cycles detected, stopping program&#39;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">res</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">):</span>
+
+            <span class="n">link_robustness</span><span class="p">,</span> <span class="n">cuttingEdges</span> <span class="o">=</span> <span class="n">calc_link_robustness</span><span class="p">(</span>
+                <span class="n">ref_graph</span><span class="p">,</span> <span class="n">cut_graph</span><span class="p">,</span> <span class="n">cyc_nx_base</span><span class="p">,</span> <span class="n">numeric_res</span>
+                <span class="p">)</span>
+
+            <span class="n">robustnessSets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">link_robustness</span><span class="p">)</span>
+            <span class="n">cutSets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cuttingEdges</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;No initial linkages detected, stopping program&#39;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">robustnessSets</span><span class="p">,</span> <span class="n">nullitySets</span><span class="p">),</span> <span class="n">cutSets</span></div>
+
+
+<div class="viewcode-block" id="calc_link_robustness"><a class="viewcode-back" href="../../intertwined.html#intertwined.intertwinedness_randRobustness.calc_link_robustness">[docs]</a><span class="k">def</span> <span class="nf">calc_link_robustness</span><span class="p">(</span><span class="n">ref_graph</span><span class="p">,</span> <span class="n">cut_graph</span><span class="p">,</span> <span class="n">cyc_nx_base</span><span class="p">,</span> <span class="n">numeric_res</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sampling randonly through edges and cutting them until the</span>
+<span class="sd">    intertwined graphs disentangle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        ref_graph (list):\n</span>
+<span class="sd">            The reference graph, which is setting the frame to be disentangled</span>
+<span class="sd">            from.</span>
+<span class="sd">        cut_graph (list):\n</span>
+<span class="sd">            The graph for which the optimal cut set if searched.</span>
+<span class="sd">        cyc_nx_base (list):\n</span>
+<span class="sd">            The initial cycle bases.</span>
+<span class="sd">        numeric_res (lndarray):\n</span>
+<span class="sd">            The initial linking number matrix.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int:\n</span>
+<span class="sd">            The final cutting number.</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            The list of random cuts for the cut_graph.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">link_robustness</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">cuttingEdges</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># set up dummy graph</span>
+    <span class="n">SG</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">cut_graph</span><span class="p">)</span>
+    <span class="n">graph_sets</span> <span class="o">=</span> <span class="p">[</span><span class="n">SG</span><span class="p">,</span> <span class="n">ref_graph</span><span class="p">]</span>
+    <span class="n">null</span> <span class="o">=</span> <span class="n">itws</span><span class="o">.</span><span class="n">calc_nullity</span><span class="p">(</span><span class="n">SG</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">null</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+        <span class="c1"># cut but do not disconnect</span>
+        <span class="n">lk_mat</span> <span class="o">=</span> <span class="n">itws</span><span class="o">.</span><span class="n">get_linkage_matrix</span><span class="p">(</span><span class="n">numeric_res</span><span class="p">,</span> <span class="n">cyc_nx_base</span><span class="p">)</span>
+        <span class="n">cycles_to_cut</span> <span class="o">=</span> <span class="p">[</span><span class="n">j</span> <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">lk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lk_mat</span><span class="p">)</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">lk</span> <span class="o">!=</span> <span class="mf">0.</span><span class="p">)]</span>
+
+        <span class="c1"># compute linkage of basis vectors</span>
+        <span class="n">cyc_id</span> <span class="o">=</span> <span class="n">rd</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">cycles_to_cut</span><span class="p">)</span>
+        <span class="n">cut_cycle</span> <span class="o">=</span> <span class="n">cyc_nx_base</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">cyc_id</span><span class="p">]</span>
+        <span class="n">eList</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cut_cycle</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span>
+        <span class="n">rd</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">eList</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">eList</span><span class="p">:</span>
+
+            <span class="n">graph_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">graph_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+
+                <span class="n">link_robustness</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">cuttingEdges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+                <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">graph_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="n">cyc_nx_base</span> <span class="o">=</span> <span class="p">[</span><span class="n">itws</span><span class="o">.</span><span class="n">calc_cycle_basis</span><span class="p">(</span><span class="n">graph_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">cyc_nx_base</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">numeric_res</span> <span class="o">=</span> <span class="n">itws</span><span class="o">.</span><span class="n">basis_linkage</span><span class="p">(</span><span class="o">*</span><span class="n">cyc_nx_base</span><span class="p">)</span>
+
+        <span class="c1"># check breaks</span>
+        <span class="n">null</span> <span class="o">=</span> <span class="n">itws</span><span class="o">.</span><span class="n">calc_nullity</span><span class="p">(</span><span class="n">graph_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">fromiter</span><span class="p">(</span><span class="n">numeric_res</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">),</span> <span class="mi">0</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">res</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">link_robustness</span><span class="p">,</span> <span class="n">cuttingEdges</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">entanglement-analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">intertwined.intertwinedness_randRobustness</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Felix Kramer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

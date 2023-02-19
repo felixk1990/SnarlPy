@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>intertwined.signature &#8212; entanglement-analysis  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">entanglement-analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">intertwined.signature</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for intertwined.signature</h1><div class="highlight"><pre>
+<span></span><span class="c1"># @Author: Felix Kramer &lt;felix&gt;</span>
+<span class="c1"># @Date:   2022-07-27T15:50:36+02:00</span>
+<span class="c1"># @Email:  felixuwekramer@proton.me</span>
+<span class="c1"># @Filename: signature.py</span>
+<span class="c1"># @Last modified by:   felix</span>
+<span class="c1"># @Last modified time: 2022-07-28T18:12:09+02:00</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rd</span>
+
+
+<div class="viewcode-block" id="extract_eulerpath"><a class="viewcode-back" href="../../intertwined.html#intertwined.signature.extract_eulerpath">[docs]</a><span class="k">def</span> <span class="nf">extract_eulerpath</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract the Eulerian path as an edge sequence from a cycle, given an</span>
+<span class="sd">    arbitrary starting node.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nx_cycle (networkx.Graph): \n</span>
+<span class="sd">            A networkx.Graph object represeting a cycle.</span>
+<span class="sd">        nroot (networkx.Graph.node): \n</span>
+<span class="sd">            A networkx.Graph.node object to start the path search.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        iterable: \n</span>
+<span class="sd">            A sequence of edges (ordered)/ a walk along the cyle.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">ep</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">eulerian_path</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">,</span> <span class="n">source</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ep</span></div>
+
+
+<div class="viewcode-block" id="get_signature"><a class="viewcode-back" href="../../intertwined.html#intertwined.signature.get_signature">[docs]</a><span class="k">def</span> <span class="nf">get_signature</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a simple graph for reference, compute the edge signatures for the</span>
+<span class="sd">    Eulerian path through the cycle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nx_cycle (networkx.Graph): \n</span>
+<span class="sd">            A networkx.Graph object represeting a cycle.</span>
+<span class="sd">        sig_grapht (dict): \n</span>
+<span class="sd">            A dictionary holding the signature information for any edge in the</span>
+<span class="sd">            reference graph.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: \n</span>
+<span class="sd">            A dictionary holding the signature information for any edge in the</span>
+<span class="sd">            cycle graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sig_cycle</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">list_e</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">extract_eulerpath</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx_cycle</span><span class="o">.</span><span class="n">nodes</span><span class="p">())[</span><span class="mi">0</span><span class="p">]))</span>
+
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">list_e</span><span class="p">:</span>
+        <span class="n">sig_cycle</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_relative_direction</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sig_cycle</span></div>
+
+
+<div class="viewcode-block" id="get_signature_rand"><a class="viewcode-back" href="../../intertwined.html#intertwined.signature.get_signature_rand">[docs]</a><span class="k">def</span> <span class="nf">get_signature_rand</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a simple graph for reference, compute the edge signatures for the</span>
+<span class="sd">    Eulerian path through the cycle. Randomize the root node during path</span>
+<span class="sd">    search.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nx_cycle (networkx.Graph): \n</span>
+<span class="sd">            A networkx.Graph object represeting a cycle.</span>
+<span class="sd">        sig_grapht (dict): \n</span>
+<span class="sd">            A dictionary holding the signature information for any edge in the</span>
+<span class="sd">            reference graph.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: \n</span>
+<span class="sd">            A dictionary holding the signature information for any edge in the</span>
+<span class="sd">            cycle graph.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sig_cycle</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="n">list_e</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span>
+        <span class="n">extract_eulerpath</span><span class="p">(</span><span class="n">nx_cycle</span><span class="p">,</span> <span class="n">rd</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">nx_cycle</span><span class="o">.</span><span class="n">nodes</span><span class="p">())))</span>
+        <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">list_e</span><span class="p">:</span>
+        <span class="n">sig_cycle</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_relative_direction</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">sig_cycle</span></div>
+
+
+<div class="viewcode-block" id="get_edge_direction"><a class="viewcode-back" href="../../intertwined.html#intertwined.signature.get_edge_direction">[docs]</a><span class="k">def</span> <span class="nf">get_edge_direction</span><span class="p">(</span><span class="n">edge_set</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Setting the intrinsic direction for all edges in a given set.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        edge-set (list): \n</span>
+<span class="sd">            A set of edges, with aplha and omega nodes non-equal.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: \n</span>
+<span class="sd">            A dictionary holding the signature information for any edge in the</span>
+<span class="sd">            set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edge_set</span><span class="p">):</span>
+
+        <span class="n">sig</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">e</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">sig</span></div>
+
+
+<div class="viewcode-block" id="get_relative_direction"><a class="viewcode-back" href="../../intertwined.html#intertwined.signature.get_relative_direction">[docs]</a><span class="k">def</span> <span class="nf">get_relative_direction</span><span class="p">(</span><span class="n">edge</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Getting the edge signature for an edge set in relation to a reference set.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        edge-set (list): \n</span>
+<span class="sd">            A set of edges, with aplha and omega nodes non-equal.</span>
+<span class="sd">        sig_grapht (dict): \n</span>
+<span class="sd">            A dictionary holding the signature information for any edge in the</span>
+<span class="sd">            reference graph.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dict: \n</span>
+<span class="sd">            A dictionary holding the signature information for any edge in the</span>
+<span class="sd">            set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">signature</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">sig_graph</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">signature</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">entanglement-analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">intertwined.signature</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Felix Kramer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>

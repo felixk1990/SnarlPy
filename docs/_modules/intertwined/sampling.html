@@ -1,0 +1,285 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>intertwined.sampling &#8212; entanglement-analysis  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">entanglement-analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">intertwined.sampling</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for intertwined.sampling</h1><div class="highlight"><pre>
+<span></span><span class="c1"># @Author:  Felix Kramer</span>
+<span class="c1"># @Date:   2021-09-25T14:20:58+02:00</span>
+<span class="c1"># @Email:  kramer@mpi-cbg.de</span>
+<span class="c1"># @Project: go-with-the-flow</span>
+<span class="c1"># @Last modified by:   felix</span>
+<span class="c1"># @Last modified time: 2022-07-28T18:45:01+02:00</span>
+<span class="c1"># @License: MIT</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">intertwined.edge_algebra</span> <span class="k">as</span> <span class="nn">edge_algebra</span>
+<span class="kn">import</span> <span class="nn">intertwined.signature</span> <span class="k">as</span> <span class="nn">signature</span>
+<span class="kn">import</span> <span class="nn">intertwined.cycleToolsLinking</span> <span class="k">as</span> <span class="nn">ctl</span>
+
+
+<div class="viewcode-block" id="calc_nullity"><a class="viewcode-back" href="../../intertwined.html#intertwined.sampling.calc_nullity">[docs]</a><span class="k">def</span> <span class="nf">calc_nullity</span><span class="p">(</span><span class="n">G</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute a simple graph&#39;s nullity/cyclomatic number.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        G (networkx.Graph):\n</span>
+<span class="sd">            A simple graph.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int:\n</span>
+<span class="sd">            The cyclomatic number of the graph.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">E</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">CC</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">number_connected_components</span><span class="p">(</span><span class="n">G</span><span class="p">)</span>
+    <span class="n">nullity</span> <span class="o">=</span> <span class="n">E</span><span class="o">-</span><span class="n">N</span><span class="o">+</span><span class="n">CC</span>
+
+    <span class="k">return</span> <span class="n">nullity</span></div>
+
+
+<div class="viewcode-block" id="calc_basisIntertwinedness"><a class="viewcode-back" href="../../intertwined.html#intertwined.sampling.calc_basisIntertwinedness">[docs]</a><span class="k">def</span> <span class="nf">calc_basisIntertwinedness</span><span class="p">(</span><span class="n">graph_sets</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the first intertwinedness metrics (linkage matrices for arbitrary</span>
+<span class="sd">    cycle bases).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        grap_sets (list):\n</span>
+<span class="sd">            A list of networkx.Graph objects which posses a defined spatial</span>
+<span class="sd">            embedding (nodal pos-attributes).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            A list of the arbitrarily chosen cycle matrix for the graphs.</span>
+<span class="sd">        ndarray:\n</span>
+<span class="sd">            The linkage matrix of the graph set.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># generate basis vectors and corresponding graph matrices</span>
+    <span class="c1"># cyc_nx_bases=[calc_cycle_basis(G) for G in graph_sets]</span>
+    <span class="n">cyc_nx_bases</span> <span class="o">=</span> <span class="p">[</span><span class="n">calc_cycle_minimum_basis</span><span class="p">(</span><span class="n">G</span><span class="p">)</span> <span class="k">for</span> <span class="n">G</span> <span class="ow">in</span> <span class="n">graph_sets</span><span class="p">]</span>
+
+    <span class="c1"># compute linkage of basis vectors</span>
+    <span class="n">numeric_res</span> <span class="o">=</span> <span class="n">calc_basis_linkage</span><span class="p">(</span><span class="o">*</span><span class="n">cyc_nx_bases</span><span class="p">)</span>
+    <span class="n">lk_mat</span> <span class="o">=</span> <span class="n">extract_linkage_matrix</span><span class="p">(</span><span class="n">numeric_res</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">cyc_nx_bases</span><span class="p">,</span> <span class="n">lk_mat</span></div>
+
+
+<div class="viewcode-block" id="get_basis_matrices"><a class="viewcode-back" href="../../intertwined.html#intertwined.sampling.get_basis_matrices">[docs]</a><span class="k">def</span> <span class="nf">get_basis_matrices</span><span class="p">(</span><span class="n">input_graphs</span><span class="p">,</span> <span class="n">cyc_nx_base</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute auxillary matrix sets for further computation intertwinedness</span>
+<span class="sd">    metrics.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_graphs (list):\n</span>
+<span class="sd">            A list of networkx.Graph objects which posses a defined spatial</span>
+<span class="sd">            embedding (nodal pos-attributes).</span>
+<span class="sd">        cyc_nx_base (list):\n</span>
+<span class="sd">            A list of basis cycles for each graph.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            A list of edge-tuples for each graph.</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            The respective edge signatures for each graph.</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            A list of (directed) mesh matrices for each graph.</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            A list of (undirected) mesh matrices for each graph.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get edge representations of graphs</span>
+    <span class="n">edge_mat</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">G</span><span class="o">.</span><span class="n">edges</span><span class="p">())</span> <span class="k">for</span> <span class="n">G</span> <span class="ow">in</span> <span class="n">input_graphs</span><span class="p">]</span>
+
+    <span class="n">sig</span> <span class="o">=</span> <span class="p">[</span><span class="n">signature</span><span class="o">.</span><span class="n">get_edge_direction</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">edge_mat</span><span class="p">]</span>
+
+    <span class="c1"># init cycle matrices directed and undirected, note they are transposed to</span>
+    <span class="c1"># each other</span>
+    <span class="n">set_size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_graphs</span><span class="p">)</span>
+
+    <span class="n">cyc_mat_dir</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">edge_algebra</span><span class="o">.</span><span class="n">generate_edge_matrix</span><span class="p">(</span>
+            <span class="n">cyc_nx_base</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">edge_mat</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">sig</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">set_size</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="n">cyc_mat_undir</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">edge_algebra</span><span class="o">.</span><span class="n">generate_edge_matrix_binary</span><span class="p">(</span>
+            <span class="n">cyc_nx_base</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">edge_mat</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">set_size</span><span class="p">)</span>
+        <span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">edge_mat</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">cyc_mat_dir</span><span class="p">,</span> <span class="n">cyc_mat_undir</span></div>
+
+
+<div class="viewcode-block" id="calc_cycle_basis"><a class="viewcode-back" href="../../intertwined.html#intertwined.sampling.calc_cycle_basis">[docs]</a><span class="k">def</span> <span class="nf">calc_cycle_basis</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute a cycle basis of a simple graph via a bfs search algorithm.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nx_graph (networkx.Graph):\n</span>
+<span class="sd">            A simple graph.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            A list of networkx.Graph objeccts, represting the basis cycles of</span>
+<span class="sd">            the input graph.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">ctl</span><span class="o">.</span><span class="n">linkedCycles_tools</span><span class="p">()</span>
+    <span class="n">S</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">)</span>
+    <span class="n">basis_nx</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">construct_networkx_basis</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">basis_nx</span></div>
+
+
+<div class="viewcode-block" id="calc_cycle_minimum_basis"><a class="viewcode-back" href="../../intertwined.html#intertwined.sampling.calc_cycle_minimum_basis">[docs]</a><span class="k">def</span> <span class="nf">calc_cycle_minimum_basis</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute a minimal topological cycle basis of a simple graph via Horton&#39;s</span>
+<span class="sd">    algorithm.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        nx_graph (networkx.Graph):\n</span>
+<span class="sd">            A simple graph.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list:\n</span>
+<span class="sd">            A list of networkx.Graph objects, represting the basis cycles of</span>
+<span class="sd">            the input graph.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">S</span> <span class="o">=</span> <span class="n">ctl</span><span class="o">.</span><span class="n">linkedCycles_tools</span><span class="p">()</span>
+    <span class="n">S</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">(</span><span class="n">nx_graph</span><span class="p">)</span>
+    <span class="n">basis_nx</span> <span class="o">=</span> <span class="n">S</span><span class="o">.</span><span class="n">construct_networkx_minimum_basis</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">basis_nx</span></div>
+
+
+<div class="viewcode-block" id="extract_linkage_matrix"><a class="viewcode-back" href="../../intertwined.html#intertwined.sampling.extract_linkage_matrix">[docs]</a><span class="k">def</span> <span class="nf">extract_linkage_matrix</span><span class="p">(</span><span class="n">numeric_res</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the linkage matrix from raw, non-rounded resuts dict structure.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        numeric_res (networkx.Graph):\n</span>
+<span class="sd">            The linkage dictionary, contaitning the non-rounded results of the</span>
+<span class="sd">            Gauss-Map calculations for each cycle pair.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray:\n</span>
+<span class="sd">            The linkage matrix of two graphs in cycle per cycle representation.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">d1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">numeric_res</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">k</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">numeric_res</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+    <span class="n">nr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">d1</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">d2</span><span class="p">)))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">d1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">d2</span><span class="p">):</span>
+            <span class="n">nr</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">numeric_res</span><span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)],</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nr</span></div>
+
+
+<div class="viewcode-block" id="calc_basis_linkage"><a class="viewcode-back" href="../../intertwined.html#intertwined.sampling.calc_basis_linkage">[docs]</a><span class="k">def</span> <span class="nf">calc_basis_linkage</span><span class="p">(</span><span class="n">cycle_sets1</span><span class="p">,</span> <span class="n">cycle_sets2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the linkage dictionary for each cycle pair.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cycle_sets1 (list):\n</span>
+<span class="sd">            A list of networkx.Graph objects, represting the basis cycles of</span>
+<span class="sd">            the input graph #1.</span>
+<span class="sd">        cycle_sets2 (list):\n</span>
+<span class="sd">            A list of networkx.Graph objects, represting the basis cycles of</span>
+<span class="sd">            the input graph #2.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        dict:\n</span>
+<span class="sd">            The linkage dictionary, contaitning the non-rounded results of the</span>
+<span class="sd">            Gauss-Map calculations for each cycle pair.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># calc linkage of basis cycles</span>
+    <span class="n">T</span> <span class="o">=</span> <span class="n">ctl</span><span class="o">.</span><span class="n">linkedCycles_extraTools</span><span class="p">()</span>
+    <span class="n">bool_res</span><span class="p">,</span> <span class="n">res</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">calc_linkage_cycleSets_nxGraph</span><span class="p">(</span><span class="n">cycle_sets1</span><span class="p">,</span> <span class="n">cycle_sets2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">entanglement-analysis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">intertwined.sampling</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Felix Kramer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.4.0.
+    </div>
+  </body>
+</html>
