@@ -17,7 +17,7 @@ pip install intertwined
 ```
 Via Cloning
 ```
-git clone https://git.mpi-cbg.de/kramer/entanglement-analysis.git .
+git clone git@github.com:felixk1990/network-linkage.git
 pip install ./entanglement-analysis/
 ```
 ##  Usage
@@ -58,9 +58,9 @@ p, lk_mat = itwe.getEdgeLinkageOperator(graph_sets)
 fig = update_priorityPlot(D, p)
 fig.show()
 ```
-![network](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/dualLadderShift_0.png)
-![prio1](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/lambdaSQ_10.png)
-![prio2](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/lambdaSQ_20.png)
+![network](https://raw.githubusercontent.com/felixk1990/network-linkage/gallery/main/dualLadderShift_0.png)
+![prio1](https://raw.githubusercontent.com/felixk1990/network-linkage/main/gallery/main/lambdaSQ_10.png)
+![prio2](https://raw.githubusercontent.com/felixk1990/network-linkage/gallery/main/lambdaSQ_20.png)
 
 The package also allows you to directly compute cut sets, to find the best way
 to topologically disentangle the networks. Calling this bit of code will
@@ -79,7 +79,7 @@ cut_lists = []
 for ics in init_cut_sets:
     cut_lists.append(itwe.cuttingEdgeAlgorithm(*ics))
 ```
-![cuts](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/cuttingEdgeAlgorithm.png)
+![cuts](https://raw.githubusercontent.com/felixk1990/network-linkage/gallery/main/cuttingEdgeAlgorithm.png)
 ##  Requirements
 ```
 networkx==2.5
