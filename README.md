@@ -58,9 +58,9 @@ p, lk_mat = itwe.getEdgeLinkageOperator(graph_sets)
 fig = update_priorityPlot(D, p)
 fig.show()
 ```
-![network](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/dualLadderShift_0.png)
-![prio1](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/lambdaSQ_10.png)
-![prio2](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/lambdaSQ_20.png)
+![network](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/dualLadderShift_0.png)
+![prio1](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/lambdaSQ_10.png)
+![prio2](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/lambdaSQ_20.png)
 
 The package also allows you to directly compute cut sets, to find the best way
 to topologically disentangle the networks. Calling this bit of code will
@@ -79,7 +79,7 @@ cut_lists = []
 for ics in init_cut_sets:
     cut_lists.append(itwe.cuttingEdgeAlgorithm(*ics))
 ```
-![cuts](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/cuttingEdgeAlgorithm.png)
+![cuts](https://github.com/felixk1990/network-linkage/-/raw/main/gallery/main/cuttingEdgeAlgorithm.png)
 ##  Requirements
 ```
 networkx==2.5
