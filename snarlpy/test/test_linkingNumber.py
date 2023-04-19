@@ -4,7 +4,7 @@
 # @Last modified by:   felix
 # @Last modified time: 2022-07-28T10:52:38+02:00
 import numpy as np
-import intertwined.sampling as itws
+import snarlpy.sampling as sps
 import auxFunc as af
 
 
@@ -23,5 +23,5 @@ def test_linkingNumbers():
 
         K = constr()
         graphSets = [k.G for k in K.layer]
-        cyc_nx_base, lk_mat = itws.calc_basisIntertwinedness(graphSets)
+        cyc_nx_base, lk_mat = sps.calc_basisIntertwinedness(graphSets)
         assert np.array_equal(results[i], lk_mat)

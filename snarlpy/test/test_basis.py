@@ -8,7 +8,7 @@
 import networkx as nx
 import numpy as np
 import random
-import intertwined.simpleCycles as simpleCycles
+import snarlpy.simpleCycles as simpleCycles
 
 
 def test_nullity():
