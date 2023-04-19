@@ -4,12 +4,8 @@ import scipy
 import os.path as op
 
 import plotly.graph_objects as go
-import iop.pgf_figure as pf
-import iop.init_IO as initIO
 
-pathOutput = './plots_cuttingEdge'
-
-def plotLambdaMaps(p, set_number):
+def plotLambdaMaps(p):
 
     myMaps=['BuGn','RdPu']
     opt =dict(width="140%",
@@ -17,30 +13,29 @@ def plotLambdaMaps(p, set_number):
             loc='lower center',
             borderpad=-4
          )
-
+    cmap = ['BuGn', 'RdPu']
     I = [np.dot(p,p.T), np.dot(p.T,p)]
     for i in range(2):
-
-        fig, ax = pf.newfig(0.4)
-        tag = r'$\Vert S_{'+str(i+1)+',ij} \Vert$'
-
-        im = ax.imshow(np.absolute(I[i]),cmap=myMaps[i])
-#         axins = inset_axes(ax,**opt)
-#         cbar = fig.colorbar(im, cax=axins , orientation="horizontal")
-        cbar = fig.colorbar(im, ax=ax )
-        ax.set_title(tag)
-
-        axtag =r'$E_'+str(i+1)+'$'
-        ax.set_xlabel(axtag)
-        ax.set_ylabel(axtag)
-
-#         ticks = [*range(len(I[i][0]))][::4]
-#         ax.set_xticks(ticks)
-#         ax.set_yticks(ticks)
-
-        file = 'pyplotLambdaSQ_'+str(i+1)+str(set_number)
-        filename=op.join(pathOutput, file)
-        pf.savefig(filename)
+        
+        kwargs = dict(
+            autosize = False,
+            height = 400,
+            width = 400,
+            coloraxis = {'colorscale':cmap[i]},
+            title={
+                'text':  r'$\Vert S_{'+str(i+1)+',ij} \Vert$',
+                'y':.9,
+                'x':0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'},
+            xaxis_title=r'$E_'+str(i+1)+'$',
+            yaxis_title=r'$E_'+str(i+1)+'$',
+        )
+        
+        fig = go.Figure()    
+        fig.add_trace(go.Heatmap(z=np.absolute(I[i]), coloraxis="coloraxis"))
+        fig.update_layout(**kwargs)
+        fig.show()
 
 def update_plot(D):
 
@@ -72,13 +67,3 @@ def update_priorityPlot(D, p):
     fig.show()
 
     return fig
-
-def export_priorityPlot(D, p, file):
-
-    global pathOutput
-
-    fig = update_priorityPlot(D, p)
-
-    filename=op.join(pathOutput, file)
-    fig.write_html(filename +".html" )
-    fig.write_image(filename +".pdf" )
