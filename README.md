@@ -1,11 +1,8 @@
-# Snarlpy 
-
-A repository holding the structure for the 'Snarlpy' package as well
-examples and galleries. 
+# SnarlPy 
 
 ##  Introduction
 The module 'snarlpy' is a python packages encompassing a set of class and
-method implementations for networkx datatypes, in order to calculate linking
+method implementations for 'networkx' graphs, in order to calculate linking
 numbers of spatially intertwined networks and optimal cuts to
 topologically unlink them. Used and explained in the publication: arXiv:2208.11662
 <br>
