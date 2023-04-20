@@ -4,7 +4,7 @@
 The module 'snarlpy' is a python packages encompassing a set of class and
 method implementations for 'networkx' graphs, in order to calculate linking
 numbers of spatially intertwined networks and optimal cuts to
-topologically unlink them. Used and explained in the publication: arXiv:2208.11662
+topologically unlink them. Used and explained in the publication: **arXiv:2208.11662**
 <br>
 
 ##  Installation
@@ -13,7 +13,7 @@ Via PyPi
 pip install snarlpy
 ```
 ##  Usage
-For theory and algorithm details see publication: arXiv:2208.11662
+For theory and algorithm details see publication: **arXiv:2208.11662**
 Let's create an intertwined, spatial network with the package's internal
 generator (here two ladders) and calculate the linking number matrices 'lk_mat'
 (cycle space) and 'p'(edge space). When we have done so compute the the priority
@@ -71,6 +71,7 @@ for ics in init_cut_sets:
     cut_lists.append(spe.cuttingEdgeAlgorithm(*ics))
 ```
 ![cuts](https://raw.githubusercontent.com/felixk1990/network-linkage//main/gallery/main/cuttingEdgeAlgorithm.png)
+Further examples on the usage and percularities of edge priorities and network linkage can be found in the notebook example included.
 ##  Requirements
 ```
 kirchhoff==0.2.7
