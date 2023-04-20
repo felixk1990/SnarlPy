@@ -1,5 +1,5 @@
 # SnarlPy 
-
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/felixk1990/SnarlPy/HEAD)
 ##  Introduction
 The module 'snarlpy' is a python packages encompassing a set of class and
 method implementations for 'networkx' graphs, in order to calculate linking
