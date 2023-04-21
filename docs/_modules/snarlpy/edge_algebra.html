@@ -1,0 +1,401 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>snarlpy.edge_algebra &#8212; snarlpy  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/classic.css" />
+    
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">snarlpy  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">snarlpy.edge_algebra</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for snarlpy.edge_algebra</h1><div class="highlight"><pre>
+<span></span><span class="c1"># @Author:  Felix Kramer</span>
+<span class="c1"># @Date:   2021-09-25T14:20:58+02:00</span>
+<span class="c1"># @Email:  kramer@mpi-cbg.de</span>
+<span class="c1"># @Project: entanglement-analysis</span>
+<span class="c1"># @Last modified by:   felix</span>
+<span class="c1"># @Last modified time: 2022-07-28T15:11:15+02:00</span>
+<span class="c1"># @License: MIT</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">snarlpy.signature</span> <span class="k">as</span> <span class="nn">signature</span>
+
+
+<div class="viewcode-block" id="edge_column"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.edge_column">[docs]</a><span class="k">def</span> <span class="nf">edge_column</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">edge_set</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the signature-sensitive edge vector representation of a given</span>
+<span class="sd">    cycle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        c (networkx.Graph): \n</span>
+<span class="sd">            A networkx.Graph representing a Eulerian cycle in the simple</span>
+<span class="sd">            graph.</span>
+<span class="sd">        edge_set (list): \n</span>
+<span class="sd">            A list of all edges in the simple graph.</span>
+<span class="sd">        sig_graph (dict): \n</span>
+<span class="sd">            A dictionary holding the information on the graph&#39;s intrinsic</span>
+<span class="sd">            edge signatures (directions) for comparison with cycle edge</span>
+<span class="sd">            directions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nadarray: \n</span>
+<span class="sd">            The signature-sensitive edge vector representation of the given</span>
+<span class="sd">            cycle.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">e_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edge_set</span><span class="p">))</span>
+    <span class="n">signa</span> <span class="o">=</span> <span class="n">signature</span><span class="o">.</span><span class="n">get_signature</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edge_set</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">signa</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">e_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">signa</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">e_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">signa</span><span class="p">[</span><span class="n">e</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">e_row</span></div>
+
+
+<div class="viewcode-block" id="edge_column_rand"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.edge_column_rand">[docs]</a><span class="k">def</span> <span class="nf">edge_column_rand</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">edge_set</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the signature-sensitive edge vector representation of a given</span>
+<span class="sd">    cycle. Randomize the initial node for the ycle&#39;s signature computation.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        c (networkx.Graph): \n</span>
+<span class="sd">            A networkx.Graph representing a Eulerian cycle in the simple</span>
+<span class="sd">            graph.</span>
+<span class="sd">        edge_set (list): \n</span>
+<span class="sd">            A list of all edges in the simple graph.</span>
+<span class="sd">        sig_graph (dict): \n</span>
+<span class="sd">            A dictionary holding the information on the graph&#39;s intrinsic</span>
+<span class="sd">            edge signatures (directions) for comparison with cycle edge</span>
+<span class="sd">            directions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nadarray: \n</span>
+<span class="sd">            The signature-sensitive edge vector representation of the given</span>
+<span class="sd">            cycle.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">e_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edge_set</span><span class="p">))</span>
+    <span class="n">signa</span> <span class="o">=</span> <span class="n">signature</span><span class="o">.</span><span class="n">get_signature_rand</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edge_set</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">):</span>
+
+            <span class="k">if</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">signa</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">e_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">signa</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">e_row</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">signa</span><span class="p">[</span><span class="n">e</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="n">e_row</span></div>
+
+
+<div class="viewcode-block" id="generate_edge_matrix"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.generate_edge_matrix">[docs]</a><span class="k">def</span> <span class="nf">generate_edge_matrix</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">edge_set</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the signature-sensitive edge vector representations of an entire</span>
+<span class="sd">    cycle basis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        basis (list): \n</span>
+<span class="sd">            A list networkx.Graph objects, representing the Eulerian cycle</span>
+<span class="sd">            basis of the simple graph.</span>
+<span class="sd">        edge_set (list): \n</span>
+<span class="sd">            A list of all edges in the simple graph.</span>
+<span class="sd">        sig_graph (dict): \n</span>
+<span class="sd">            A dictionary holding the information on the graph&#39;s intrinsic</span>
+<span class="sd">            edge signatures (directions) for comparison with cycle edge</span>
+<span class="sd">            directions.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nadarray: \n</span>
+<span class="sd">            The signature-sensitive edge vectors of all cycles bundled into one</span>
+<span class="sd">            matrix (technically the graph&#39;s mesh matrix)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_set</span><span class="p">)</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">basis</span><span class="p">):</span>
+        <span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_column</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">edge_set</span><span class="p">,</span> <span class="n">sig_graph</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">E</span><span class="o">.</span><span class="n">T</span></div>
+
+
+<div class="viewcode-block" id="edge_column_binary"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.edge_column_binary">[docs]</a><span class="k">def</span> <span class="nf">edge_column_binary</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">edge_set</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the binary edge vector representation of a given</span>
+<span class="sd">    cycle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        c (networkx.Graph): \n</span>
+<span class="sd">            A networkx.Graph representing a Eulerian cycle in the simple</span>
+<span class="sd">            Graph.</span>
+<span class="sd">        edge_set (list): \n</span>
+<span class="sd">            A list of all edges in the simple graph.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nadarray: \n</span>
+<span class="sd">            The binary edge vector representation of the given</span>
+<span class="sd">            cycle.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">e_row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edge_set</span><span class="p">))</span>
+
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">edge_set</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">has_edge</span><span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="p">)]</span>
+    <span class="n">e_row</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">e_row</span></div>
+
+
+<div class="viewcode-block" id="generate_edge_matrix_binary"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.generate_edge_matrix_binary">[docs]</a><span class="k">def</span> <span class="nf">generate_edge_matrix_binary</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">edge_set</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the binary edge vector representations of an entire</span>
+<span class="sd">    cycle basis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        basis (list): \n</span>
+<span class="sd">            A list networkx.Graph objects, representing the Eulerian cycle</span>
+<span class="sd">            basis of the simple graph.</span>
+<span class="sd">        edge_set (list): \n</span>
+<span class="sd">            A list of all edges in the simple graph.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nadarray: \n</span>
+<span class="sd">            The binary edge vectors of all cycles bundled into one</span>
+<span class="sd">            matrix (technically the graph&#39;s mesh matrix).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">edge_set</span><span class="p">)</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">basis</span><span class="p">):</span>
+        <span class="n">E</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">edge_column_binary</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">edge_set</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">E</span></div>
+
+
+<div class="viewcode-block" id="get_cycle_superpositions_edge_vector"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.get_cycle_superpositions_edge_vector">[docs]</a><span class="k">def</span> <span class="nf">get_cycle_superpositions_edge_vector</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">cycle_matrix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the edge vector of a cycle aquired from superposition of basis</span>
+<span class="sd">    cycles.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        keys (list): \n</span>
+<span class="sd">            An index list indicating which cycles are to be superimposed.</span>
+<span class="sd">        cycle_matrix (ndarray): \n</span>
+<span class="sd">            The binary edge vectors of all cycles bundled into one</span>
+<span class="sd">            matrix (technically the graph&#39;s mesh matrix).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        nadarray: \n</span>
+<span class="sd">            The signature-sensitive edge vectors of all cycles bundled into one</span>
+<span class="sd">            matrix (technically the graph&#39;s mesh matrix)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">cycle_matrix</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="check_superposition_edge_connected"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.check_superposition_edge_connected">[docs]</a><span class="k">def</span> <span class="nf">check_superposition_edge_connected</span><span class="p">(</span><span class="n">keys</span><span class="p">,</span> <span class="n">edge_matrix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute cycle superpostion with consectuive test whether the cycles</span>
+<span class="sd">    generated during superposition are connected.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        keys (list): \n</span>
+<span class="sd">            An index list indicating which cycles are to be superimposed.</span>
+<span class="sd">        cycle_matrix (ndarray): \n</span>
+<span class="sd">            The binary edge vectors of all cycles bundled into one</span>
+<span class="sd">            matrix (technically the graph&#39;s mesh matrix).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        bool: \n</span>
+<span class="sd">            True or False, depending on whether the cycles</span>
+<span class="sd">            generated during superposition are connected.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">checking</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+    <span class="n">checking</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+        <span class="n">E_aux</span> <span class="o">=</span> <span class="n">edge_matrix</span><span class="p">[</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="nb">id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+
+            <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">E_aux</span><span class="p">,</span> <span class="n">edge_matrix</span><span class="p">[</span><span class="nb">id</span><span class="p">])</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">E</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">E_aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">checking</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">checking</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="sort_rows"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.sort_rows">[docs]</a><span class="k">def</span> <span class="nf">sort_rows</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">Ax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Resort rows, as part of acquiring the echelon form of the linear system Ax.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        column (ndarray): \n</span>
+<span class="sd">            Current column index being processed.</span>
+<span class="sd">        idx (ndarray): \n</span>
+<span class="sd">            The current row processed that needs to be shifted.</span>
+<span class="sd">        Ax (ndarray): \n</span>
+<span class="sd">            A given binary equation system, used for linear independence tests</span>
+<span class="sd">            of Eulerian cycles.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Ax</span><span class="p">[[</span><span class="n">column</span><span class="p">,</span> <span class="n">idx</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">Ax</span><span class="p">[[</span><span class="n">idx</span><span class="p">,</span> <span class="n">column</span><span class="p">],</span> <span class="p">:]</span></div>
+
+
+<div class="viewcode-block" id="calc_echelon_form"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.calc_echelon_form">[docs]</a><span class="k">def</span> <span class="nf">calc_echelon_form</span><span class="p">(</span><span class="n">Ax</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the echelon form of a given binary equations system and checking</span>
+<span class="sd">    for inconsistencies and solutions of the key problem.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        Ax (ndarray): \n</span>
+<span class="sd">            A given binary equation system, used for linear independence tests</span>
+<span class="sd">            of Eulerian cycles.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray: \n</span>
+<span class="sd">            The last column of the echelon, indicating whether the column</span>
+<span class="sd">            vectors are linear independent or not.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">columns</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+
+    <span class="c1"># compute echelon</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">columns</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="n">idx_nz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">Ax</span><span class="p">[</span><span class="n">column</span><span class="p">:,</span> <span class="n">column</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">idx_nz</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">column</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">idx_nz</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+
+            <span class="n">new_idx</span> <span class="o">=</span> <span class="n">idx_nz</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="o">+</span><span class="n">column</span>
+            <span class="n">aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Ax</span><span class="p">[</span><span class="n">new_idx</span><span class="p">],</span> <span class="n">Ax</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+            <span class="n">Ax</span><span class="p">[</span><span class="n">new_idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">aux</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">sort_rows</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">Ax</span><span class="p">)</span>
+
+    <span class="c1"># compute solution</span>
+    <span class="n">Ax</span> <span class="o">=</span> <span class="n">Ax</span><span class="p">[:</span><span class="n">columns</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">columns</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">columns</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">column</span>
+        <span class="n">idx_nz</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">Ax</span><span class="p">[:</span><span class="n">c</span><span class="p">,</span> <span class="n">c</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">aux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Ax</span><span class="p">[</span><span class="n">idx_nz</span><span class="p">],</span> <span class="n">Ax</span><span class="p">[</span><span class="n">c</span><span class="p">])</span>
+        <span class="n">Ax</span><span class="p">[</span><span class="n">idx_nz</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mod</span><span class="p">(</span><span class="n">aux</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">Ax</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="get_component_key"><a class="viewcode-back" href="../../snarlpy.html#snarlpy.edge_algebra.get_component_key">[docs]</a><span class="k">def</span> <span class="nf">get_component_key</span><span class="p">(</span><span class="n">edge_vector</span><span class="p">,</span> <span class="n">edge_matrix</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    For a given binary edge vector, compute its coefficient vector</span>
+<span class="sd">    with respect to the currently used basis.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        edge_vector (ndarray): \n</span>
+<span class="sd">            The binary edge vector presentation of an Eulerian cycle.</span>
+<span class="sd">        edge_matrix (ndarray): \n</span>
+<span class="sd">            The simple graph&#39;s mesh matrix, representing the set of basis</span>
+<span class="sd">            cycles.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        ndarray: \n</span>
+<span class="sd">            The coefficient vector for given cycle in the current</span>
+<span class="sd">            cycle basis.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Ax</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">edge_matrix</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">edge_vector</span><span class="p">])</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span>
+        <span class="p">)</span>
+
+    <span class="n">new_key</span> <span class="o">=</span> <span class="n">calc_echelon_form</span><span class="p">(</span><span class="n">Ax</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_key</span></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">snarlpy  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">snarlpy.edge_algebra</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Felix Kramer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>

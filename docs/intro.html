@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Introduction &#8212; snarlpy  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="snarlpy modules" href="snarlpy.html" />
+    <link rel="prev" title="Welcome to SnarlPy’s documentation!" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="snarlpy.html" title="snarlpy modules"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to SnarlPy’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">snarlpy  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <p>About snarlpy: <a class="reference external" href="https://mybinder.org/v2/gh/felixk1990/SnarlPy/HEAD"><img alt="Binder" src="https://mybinder.org/badge_logo.svg" /></a></p>
+<section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this heading">¶</a></h1>
+<p>The module ‘snarlpy’ is a python packages encompassing a set of class and
+method implementations for ‘networkx’ graphs, in order to calculate linking
+numbers of spatially intertwined networks and optimal cuts to
+topologically unlink them. Used and explained in the publication: <strong>arXiv:2208.11662</strong>
+<br></p>
+</section>
+<section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h1>
+<p>Via PyPi</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">snarlpy</span>
+</pre></div>
+</div>
+</section>
+<section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h1>
+<p>For theory and algorithm details see publication: <strong>arXiv:2208.11662</strong>
+Let’s create an intertwined, spatial network with the package’s internal
+generator (here two ladders) and calculate the linking number matrices ‘lk_mat’
+(cycle space) and ‘p’(edge space). When we have done so compute the the priority
+matrices and plot the matrices diagnonal values onto the respective graphs’
+edges (visualising the important edges for intertwinedness).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">snarlpy.edgePriority</span> <span class="k">as</span> <span class="nn">spe</span>
+<span class="kn">import</span> <span class="nn">snarlpy.tangledGenerators</span> <span class="k">as</span> <span class="nn">tg</span>
+
+<span class="k">def</span> <span class="nf">update_priorityPlot</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+
+    <span class="n">colors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">priority_mat</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="p">,</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">T</span><span class="p">,</span><span class="n">p</span><span class="p">)]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">D</span><span class="o">.</span><span class="n">layer</span><span class="p">):</span>
+        <span class="n">k</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;priority&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">diagonal</span><span class="p">(</span><span class="n">priority_mat</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="s1">&#39;priority&#39;</span><span class="p">])</span>
+    <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;color_nodes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;#030512&#39;</span><span class="p">,</span><span class="s1">&#39;#030512&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;color_edges&#39;</span><span class="p">:</span> <span class="n">colors</span><span class="p">,</span>
+        <span class="s1">&#39;colormap&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;BuGn&#39;</span><span class="p">,</span><span class="s1">&#39;RdPu&#39;</span><span class="p">],</span>
+        <span class="s1">&#39;axis&#39;</span><span class="p">:</span> <span class="kc">True</span>
+    <span class="p">}</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">D</span><span class="o">.</span><span class="n">plot_circuit</span><span class="p">(</span><span class="s1">&#39;priority&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">fig</span>
+
+<span class="n">num_periods</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">tg</span><span class="o">.</span><span class="n">createLabelCatenation</span><span class="p">(</span><span class="n">num_periods</span><span class="p">)</span>
+<span class="n">graph_sets</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">G</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">layer</span><span class="p">]</span>
+<span class="n">p</span><span class="p">,</span> <span class="n">lk_mat</span> <span class="o">=</span> <span class="n">spe</span><span class="o">.</span><span class="n">getEdgeLinkageOperator</span><span class="p">(</span><span class="n">graph_sets</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">update_priorityPlot</span><span class="p">(</span><span class="n">D</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><img alt="network" src="https://raw.githubusercontent.com/felixk1990/network-linkage//main/gallery/main/dualLadderShift_0.png" />
+<img alt="prio1" src="https://raw.githubusercontent.com/felixk1990/network-linkage/main/gallery/main/lambdaSQ_10.png" />
+<img alt="prio2" src="https://raw.githubusercontent.com/felixk1990/network-linkage/main//gallery/main/lambdaSQ_20.png" /></p>
+<p>The package also allows you to directly compute cut sets, to find the best way
+to topologically disentangle the networks. Calling this bit of code will
+repeatedly compute the priority matrices for both networks and remove edges of
+highest priority one by one (as displayed on the carton below).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">spe.edgePriority</span> <span class="k">as</span> <span class="nn">spe</span>
+<span class="kn">import</span> <span class="nn">tangledGenerators</span> <span class="k">as</span> <span class="nn">tg</span>
+
+<span class="n">num_periods</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">D</span> <span class="o">=</span> <span class="n">tg</span><span class="o">.</span><span class="n">createLabelHexagonHopfed_V4</span><span class="p">()</span>
+<span class="n">graph_sets</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span><span class="o">.</span><span class="n">G</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">D</span><span class="o">.</span><span class="n">layer</span><span class="p">]</span>
+<span class="n">init_cut_sets</span> <span class="o">=</span> <span class="p">[</span><span class="n">graph_sets</span><span class="p">[:],</span> <span class="n">graph_sets</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+<span class="n">cut_lists</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">ics</span> <span class="ow">in</span> <span class="n">init_cut_sets</span><span class="p">:</span>
+    <span class="n">cut_lists</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">spe</span><span class="o">.</span><span class="n">cuttingEdgeAlgorithm</span><span class="p">(</span><span class="o">*</span><span class="n">ics</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><img alt="cuts" src="https://raw.githubusercontent.com/felixk1990/network-linkage//main/gallery/main/cuttingEdgeAlgorithm.png" />
+Further examples on the usage and percularities of edge priorities and network linkage can be found in the notebook example included.</p>
+</section>
+<section id="requirements">
+<h1>Requirements<a class="headerlink" href="#requirements" title="Permalink to this heading">¶</a></h1>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kirchhoff</span><span class="o">==</span><span class="mf">0.2.7</span>
+<span class="n">matplotlib</span><span class="o">==</span><span class="mf">3.7.1</span>
+<span class="n">networkx</span><span class="o">==</span><span class="mf">2.8.4</span>
+<span class="n">numpy</span><span class="o">==</span><span class="mf">1.23.5</span>
+<span class="n">pandas</span><span class="o">==</span><span class="mf">1.5.3</span>
+<span class="n">plotly</span><span class="o">==</span><span class="mf">5.9.0</span>
+<span class="n">scipy</span><span class="o">==</span><span class="mf">1.10.1</span>
+</pre></div>
+</div>
+</section>
+<section id="acknowledgement">
+<h1>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">snarlpy</span></code> written by Felix Kramer</p>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Introduction</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#acknowledgement">Acknowledgement</a></li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Welcome to SnarlPy’s documentation!</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="snarlpy.html"
+                          title="next chapter">snarlpy modules</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/intro.md.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="snarlpy.html" title="snarlpy modules"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to SnarlPy’s documentation!"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">snarlpy  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Introduction</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Felix Kramer.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 6.1.3.
+    </div>
+  </body>
+</html>
