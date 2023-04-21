@@ -1,26 +1,18 @@
-About goflow: 
-A repository holding the structure for the 'intertwined' package as well
-examples and galleries.
-
+About snarlpy: [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/felixk1990/SnarlPy/HEAD)
 ##  Introduction
-The module 'intertwined' is a python packages encompassing a set of class and
-method implementations for networkx datatypes, in order to calculate linking
-numbers of spatially intertwined networks and near optimal cuts to
-topologically unlink them. Used and explained in the publication: ENTER_REF
+The module 'snarlpy' is a python packages encompassing a set of class and
+method implementations for 'networkx' graphs, in order to calculate linking
+numbers of spatially intertwined networks and optimal cuts to
+topologically unlink them. Used and explained in the publication: **arXiv:2208.11662**
 <br>
 
 ##  Installation
 Via PyPi
 ```
-pip install intertwined
-```
-Via Cloning
-```
-git clone https://git.mpi-cbg.de/kramer/entanglement-analysis.git .
-pip install ./entanglement-analysis/
+pip install snarlpy
 ```
 ##  Usage
-For theory and algorithm details see publication: ENTER_REF
+For theory and algorithm details see publication: **arXiv:2208.11662**
 Let's create an intertwined, spatial network with the package's internal
 generator (here two ladders) and calculate the linking number matrices 'lk_mat'
 (cycle space) and 'p'(edge space). When we have done so compute the the priority
@@ -28,8 +20,8 @@ matrices and plot the matrices diagnonal values onto the respective graphs'
 edges (visualising the important edges for intertwinedness).
 ```
 import numpy as np
-import intertwined.edgePriority as itwe
-import intertwined.tangledGenerators as tg
+import snarlpy.edgePriority as spe
+import snarlpy.tangledGenerators as tg
 
 def update_priorityPlot(D, p):
 
@@ -53,21 +45,20 @@ def update_priorityPlot(D, p):
 num_periods = 2
 D = tg.createLabelCatenation(num_periods)
 graph_sets = [k.G for k in D.layer]
-p, lk_mat = itwe.getEdgeLinkageOperator(graph_sets)
+p, lk_mat = spe.getEdgeLinkageOperator(graph_sets)
 fig = update_priorityPlot(D, p)
 fig.show()
 ```
-![network](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/dualLadderShift_0.png)
-![prio1](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/lambdaSQ_10.png)
-![prio2](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/lambdaSQ_20.png)
+![network](https://raw.githubusercontent.com/felixk1990/network-linkage//main/gallery/main/dualLadderShift_0.png)
+![prio1](https://raw.githubusercontent.com/felixk1990/network-linkage/main/gallery/main/lambdaSQ_10.png)
+![prio2](https://raw.githubusercontent.com/felixk1990/network-linkage/main//gallery/main/lambdaSQ_20.png)
 
 The package also allows you to directly compute cut sets, to find the best way
 to topologically disentangle the networks. Calling this bit of code will
 repeatedly compute the priority matrices for both networks and remove edges of
 highest priority one by one (as displayed on the carton below).
 ```
-import intertwined.sampling as itws
-import intertwined.edgePriority as itwe
+import spe.edgePriority as spe
 import tangledGenerators as tg
 
 num_periods = 2
@@ -76,16 +67,20 @@ graph_sets = [k.G for k in D.layer]
 init_cut_sets = [graph_sets[:], graph_sets[::-1]]
 cut_lists = []
 for ics in init_cut_sets:
-    cut_lists.append(itwe.cuttingEdgeAlgorithm(*ics))
+    cut_lists.append(spe.cuttingEdgeAlgorithm(*ics))
 ```
-![cuts](https://git.mpi-cbg.de/kramer/entanglement-analysis/-/raw/main/gallery/main/cuttingEdgeAlgorithm.png)
+![cuts](https://raw.githubusercontent.com/felixk1990/network-linkage//main/gallery/main/cuttingEdgeAlgorithm.png)
+Further examples on the usage and percularities of edge priorities and network linkage can be found in the notebook example included.
 ##  Requirements
 ```
-networkx==2.5
-numpy==1.21.0
-scipy==1.7.3
 kirchhoff==0.2.7
+matplotlib==3.7.1
+networkx==2.8.4
+numpy==1.23.5
+pandas==1.5.3
+plotly==5.9.0
+scipy==1.10.1
 ```
 
 ## Acknowledgement
-```intertwined``` written by Felix Kramer
+```snarlpy``` written by Felix Kramer

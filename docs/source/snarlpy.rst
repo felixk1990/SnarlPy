@@ -1,61 +1,61 @@
-intertwined modules
+snarlpy modules
 =======================
 
-intertwined.cycle_sampling
+snarlpy.cycle_sampling
 ------------------------------------------------
-.. automodule:: intertwined.cycle_sampling
+.. automodule:: snarlpy.cycle_sampling
    :members:
    :show-inheritance:
 
-intertwined.cycleToolsLinking
+snarlpy.cycleToolsLinking
 ------------------------------------------------
-.. automodule:: intertwined.cycleToolsLinking
+.. automodule:: snarlpy.cycleToolsLinking
    :members:
    :show-inheritance:
 
-intertwined.edge_algebra
+snarlpy.edge_algebra
 ------------------------------------------------
-.. automodule:: intertwined.edge_algebra
+.. automodule:: snarlpy.edge_algebra
    :members:
    :show-inheritance:
 
-intertwined.edgePriority
+snarlpy.edgePriority
 ------------------------------------------------
-.. automodule:: intertwined.edgePriority
+.. automodule:: snarlpy.edgePriority
 :members:
 :show-inheritance:
-intertwined.edgePriorityCoarseSystem
+snarlpy.edgePriorityCoarseSystem
 ------------------------------------------------
-.. automodule:: intertwined.edgePriorityCoarseSystem
+.. automodule:: snarlpy.edgePriorityCoarseSystem
    :members:
    :show-inheritance:
 
-intertwined.intertwinedness_randRobustness
+snarlpy.snarlpyness_randRobustness
 ------------------------------------------------
-.. automodule:: intertwined.intertwinedness_randRobustness
+.. automodule:: snarlpy.snarlpyness_randRobustness
    :members:
    :show-inheritance:
 
-intertwined.sampling
+snarlpy.sampling
 ------------------------------------------------
-.. automodule:: intertwined.sampling
+.. automodule:: snarlpy.sampling
    :members:
    :show-inheritance:
 
-intertwined.signature
+snarlpy.signature
 ------------------------------------------------
-.. automodule:: intertwined.signature
+.. automodule:: snarlpy.signature
    :members:
    :show-inheritance:
 
-intertwined.simpleCycles
+snarlpy.simpleCycles
 ------------------------------------------------
-.. automodule:: intertwined.simpleCycles
+.. automodule:: snarlpy.simpleCycles
    :members:
    :show-inheritance:
 
-intertwined.tangledGenerators
+snarlpy.tangledGenerators
 ------------------------------------------------
-.. automodule:: intertwined.tangledGenerators
+.. automodule:: snarlpy.tangledGenerators
    :members:
    :show-inheritance:

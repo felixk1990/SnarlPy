@@ -12,7 +12,7 @@ import pathlib
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-# locPath = '/home/felix/Documents/Git'
+
 locPath = '/home/kramer/Documents/GitHub'
 import os
 import sys
@@ -20,10 +20,10 @@ import sys
 sys.path.insert(0, os.path.abspath(os.path.join(locPath,'go-with-the-flow')))
 sys.path.insert(0, os.path.abspath(os.path.join(locPath,'kirchhoff-circuits')))
 sys.path.insert(0, os.path.abspath(os.path.join(locPath,'kirchhoff-hydro')))
-sys.path.insert(0, os.path.abspath('/home/kramer/anaconda3/lib/python3.7/site-packages/'))
-# sys.path.insert(0, os.path.abspath('/home/felix/anaconda3/lib/python3.9/site-packages/'))
+#sys.path.insert(0, os.path.abspath('/home/kramer/anaconda3/lib/python3.7/site-packages/'))
+sys.path.insert(0, os.path.abspath('/home/felix/anaconda3/lib/python3.9/site-packages/'))
 # -- Project information -----------------------------------------------------
-project = 'entanglement-analysis'
+project = 'snarlpy'
 copyright = '2022, Felix Kramer'
 author = 'Felix Kramer'
 
@@ -79,7 +79,7 @@ with readme_target.open("w") as outf:
     outf.write(
         "\n".join(
             [
-                "About goflow: ",
+                "About snarlpy: ",
             ]
         )
     )
